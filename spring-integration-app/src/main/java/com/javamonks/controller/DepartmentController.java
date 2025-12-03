@@ -28,7 +28,7 @@ public class DepartmentController {
     @GetMapping("/departments")
     public List<Department> fetchDepartmentList()
     {
-        return departmentService.fetchDepartmentList();
+        return departmentService.fetchDepartmentList().getPayload();
     }
 
     // Update operation

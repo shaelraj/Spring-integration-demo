@@ -1,6 +1,7 @@
 package com.javamonks.services;
 // Importing required classes
 import com.javamonks.entity.Department;
+import org.springframework.messaging.Message;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface DepartmentService {
     Department saveDepartment(Department department);
 
     // Read operation
-    List<Department> fetchDepartmentList();
+    Message<List<Department>> fetchDepartmentList();
 
     // Update operation
     Department updateDepartment(Department department,

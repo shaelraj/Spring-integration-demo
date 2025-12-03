@@ -3,6 +3,8 @@ package com.javamonks.services;
 import com.javamonks.entity.Department;
 import com.javamonks.repo.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.support.MessageBuilder;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,58 +12,39 @@ import java.util.Objects;
 
 // Annotation
 @Service
-
-// Class
-public class DepartmentServiceImpl
-        implements DepartmentService {
+public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private DepartmentRepository departmentRepository;
 
     // Save operation
     @Override
-    public Department saveDepartment(Department department)
-    {
+    public Department saveDepartment(Department department) {
         return departmentRepository.save(department);
     }
 
     // Read operation
-    @Override public List<Department> fetchDepartmentList()
-    {
-        return (List<Department>)
-                departmentRepository.findAll();
+    @Override
+    public Message<List<Department>> fetchDepartmentList() {
+        Message<List<Department>> list = MessageBuilder.withPayload((List<Department>)departmentRepository.findAll()).build();
+        return  list;
     }
 
     // Update operation
     @Override
-    public Department
-    updateDepartment(Department department,
-                     Long departmentId)
-    {
-        Department depDB
-                = departmentRepository.findById(departmentId)
-                .get();
+    public Department updateDepartment(Department department, Long departmentId) {
+        Department depDB = departmentRepository.findById(departmentId).get();
 
-        if (Objects.nonNull(department.getDepartmentName())
-                && !"".equalsIgnoreCase(
-                department.getDepartmentName())) {
-            depDB.setDepartmentName(
-                    department.getDepartmentName());
+        if (Objects.nonNull(department.getDepartmentName()) && !"".equalsIgnoreCase(department.getDepartmentName())) {
+            depDB.setDepartmentName(department.getDepartmentName());
         }
 
-        if (Objects.nonNull(
-                department.getDepartmentAddress())
-                && !"".equalsIgnoreCase(
-                department.getDepartmentAddress())) {
-            depDB.setDepartmentAddress(
-                    department.getDepartmentAddress());
+        if (Objects.nonNull(department.getDepartmentAddress()) && !"".equalsIgnoreCase(department.getDepartmentAddress())) {
+            depDB.setDepartmentAddress(department.getDepartmentAddress());
         }
 
-        if (Objects.nonNull(department.getDepartmentCode())
-                && !"".equalsIgnoreCase(
-                department.getDepartmentCode())) {
-            depDB.setDepartmentCode(
-                    department.getDepartmentCode());
+        if (Objects.nonNull(department.getDepartmentCode()) && !"".equalsIgnoreCase(department.getDepartmentCode())) {
+            depDB.setDepartmentCode(department.getDepartmentCode());
         }
 
         return departmentRepository.save(depDB);
@@ -69,8 +52,7 @@ public class DepartmentServiceImpl
 
     // Delete operation
     @Override
-    public void deleteDepartmentById(Long departmentId)
-    {
+    public void deleteDepartmentById(Long departmentId) {
         departmentRepository.deleteById(departmentId);
     }
 }

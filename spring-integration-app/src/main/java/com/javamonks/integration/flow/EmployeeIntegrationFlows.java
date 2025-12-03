@@ -1,14 +1,30 @@
 package com.javamonks.integration.flow;
 
+import com.javamonks.entity.Department;
 import com.javamonks.model.Employee;
+import com.javamonks.services.DepartmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.Pollers;
+import org.springframework.messaging.Message;
 
 import java.util.Arrays;
 
 @Configuration
 public class EmployeeIntegrationFlows {
+
+    public static final Logger LOG = LoggerFactory.getLogger(EmployeeIntegrationFlows.class);
+
+    private DepartmentService departmentService;
+
+    @Autowired
+    public EmployeeIntegrationFlows(DepartmentService departmentService) {
+        this.departmentService = departmentService;
+    }
 
     // #########################  TRANSFORMER  ########################//
     @Bean
@@ -21,7 +37,7 @@ public class EmployeeIntegrationFlows {
     @Bean
     public IntegrationFlow empManagersFlow() {
         return f -> f
-                .split(String.class,p -> Arrays.asList(p.toString().split(",")));
+                .split(String.class, p -> Arrays.asList(p.toString().split(",")));
     }
 
 
@@ -58,5 +74,18 @@ public class EmployeeIntegrationFlows {
                     emp.setStatus("Hired");
                     return emp;
                 });
+    }
+
+    @Bean
+    public IntegrationFlow getPendingDepartment() {
+        return IntegrationFlow.fromSupplier(departmentService::fetchDepartmentList, e -> e.poller(Pollers.fixedRate(60000)))
+//                .channel("departmentChannel")
+                .split(Message.class, m -> m.getPayload())
+                .handle(message -> {
+                    Department data = (Department) message.getPayload();
+                    LOG.info("Received data: " + data);
+                    // Process the received list as needed
+                })
+                .get();
     }
 }

@@ -20,5 +20,7 @@ public interface DepartmentService {
 
     // Delete operation
     void deleteDepartmentById(Long departmentId);
+
+    List<Department> getDepartmentByStatus(String payload);
 }
 

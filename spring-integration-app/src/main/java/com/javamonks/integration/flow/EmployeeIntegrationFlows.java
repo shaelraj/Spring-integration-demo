@@ -97,13 +97,13 @@ public class EmployeeIntegrationFlows {
     public IntegrationFlow getPendingDepartment() {
         return IntegrationFlow.fromSupplier(() -> departmentProcess.doProcess(MessageBuilder.withPayload("PENDING").build()),
                         e -> e.poller(Pollers.fixedRate(60000)))
+                .enrichHeaders(h -> {
+                    h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow");
+                })
 //                .channel("departmentChannel")
                 .split(Message.class, m -> m.getPayload())
                 .handle(departmentStatusUpdateProcess, "doProcess") // marking in progress
                 .channel(c -> c.executor(taskExecutor))
-                .enrichHeaders(h -> {
-                    h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow");
-                })
                 .handle(departmentStatusUpdateProcess, "doProcess", e -> e.transactional(true))
                 .handle(departmentCodeUpdateProcess, "doProcess")
                 .handle(message -> {

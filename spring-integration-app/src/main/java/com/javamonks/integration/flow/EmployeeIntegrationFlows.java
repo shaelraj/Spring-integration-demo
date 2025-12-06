@@ -1,6 +1,5 @@
 package com.javamonks.integration.flow;
 
-import com.javamonks.entity.Department;
 import com.javamonks.model.Employee;
 import com.javamonks.process.DepartmentCodeUpdateProcess;
 import com.javamonks.process.DepartmentProcess;
@@ -14,6 +13,8 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Arrays;
 
@@ -29,11 +30,14 @@ public class EmployeeIntegrationFlows {
 
     private final DepartmentCodeUpdateProcess departmentCodeUpdateProcess;
 
+    private final ThreadPoolTaskExecutor taskExecutor;
+
     @Autowired
-    public EmployeeIntegrationFlows(DepartmentProcess departmentProcess, DepartmentStatusUpdateProcess departmentStatusUpdateProcess, DepartmentCodeUpdateProcess departmentCodeUpdateProcess) {
+    public EmployeeIntegrationFlows(DepartmentProcess departmentProcess, DepartmentStatusUpdateProcess departmentStatusUpdateProcess, DepartmentCodeUpdateProcess departmentCodeUpdateProcess, ThreadPoolTaskExecutor taskExecutor) {
         this.departmentProcess = departmentProcess;
         this.departmentStatusUpdateProcess = departmentStatusUpdateProcess;
         this.departmentCodeUpdateProcess = departmentCodeUpdateProcess;
+        this.taskExecutor = taskExecutor;
     }
 
 
@@ -93,6 +97,8 @@ public class EmployeeIntegrationFlows {
                         e -> e.poller(Pollers.fixedRate(60000)))
 //                .channel("departmentChannel")
                 .split(Message.class, m -> m.getPayload())
+                .channel(c -> c.executor(taskExecutor))
+                .enrichHeaders(h-> h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow"))
                 .handle(departmentStatusUpdateProcess, "doProcess")
                 .handle(departmentCodeUpdateProcess,"doProcess")
                 .handle(message -> {LOG.info("Completed successfully!!");})

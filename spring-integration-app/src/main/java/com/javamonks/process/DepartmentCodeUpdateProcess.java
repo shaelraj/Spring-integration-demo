@@ -19,6 +19,9 @@ public class DepartmentCodeUpdateProcess implements IntegrationProcess<Departmen
     public Message<Department> doProcess(Message<?> message) {
         Department dept = (Department) message.getPayload();
         dept.setCode("007");
+        if(dept.getDepartmentId() == 2){
+            throw new RuntimeException("Dept is is :" + dept.getDepartmentId());
+        }
         return MessageBuilder.withPayload(departmentService.updateDepartment(dept, dept.getDepartmentId()))
                 .copyHeaders(message.getHeaders())
                 .build();

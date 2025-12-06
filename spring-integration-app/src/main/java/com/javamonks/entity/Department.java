@@ -26,4 +26,5 @@ public class Department {
     private String departmentCode;
     private String status;
     private String code;
+    private int retry;
 }

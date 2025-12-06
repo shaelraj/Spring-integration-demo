@@ -99,11 +99,16 @@ public class EmployeeIntegrationFlows {
                         e -> e.poller(Pollers.fixedRate(60000)))
 //                .channel("departmentChannel")
                 .split(Message.class, m -> m.getPayload())
+                .handle(departmentStatusUpdateProcess, "doProcess") // marking in progress
                 .channel(c -> c.executor(taskExecutor))
-                .enrichHeaders(h-> h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow"))
-                .handle(departmentStatusUpdateProcess, "doProcess", e->e.transactional(true))
-                .handle(departmentCodeUpdateProcess,"doProcess")
-                .handle(message -> {LOG.info("Completed successfully!!");})
+                .enrichHeaders(h -> {
+                    h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow");
+                })
+                .handle(departmentStatusUpdateProcess, "doProcess", e -> e.transactional(true))
+                .handle(departmentCodeUpdateProcess, "doProcess")
+                .handle(message -> {
+                    LOG.info("Completed successfully!!");
+                })
                 .get();
     }
 }

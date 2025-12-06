@@ -1,5 +1,8 @@
 package com.javamonks.integration.flow;
 
+import com.javamonks.entity.Department;
+import com.javamonks.repo.DepartmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.Pollers;
@@ -12,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ErrorIntegrationFlow {
+
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     @Bean
     public IntegrationFlow errorHandlerWorkFlow() {
@@ -28,6 +34,13 @@ public class ErrorIntegrationFlow {
 
                         System.err.println("Original Payload: " + originalPayload);
                         System.err.println("Original Headers: " + originalHeaders);
+
+                        if(originalPayload instanceof Department){
+                            Department department = (Department) originalPayload;
+                            department.setStatus("FAILED");
+                            departmentRepository.save(department);
+
+                        }
                     }
 
                     // Perform error logging, notifications, or other error handling logic

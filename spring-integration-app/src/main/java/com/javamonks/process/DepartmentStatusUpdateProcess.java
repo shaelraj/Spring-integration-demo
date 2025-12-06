@@ -1,7 +1,10 @@
 package com.javamonks.process;
 
 import com.javamonks.entity.Department;
+import com.javamonks.integration.flow.EmployeeIntegrationFlows;
 import com.javamonks.services.DepartmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DepartmentStatusUpdateProcess implements IntegrationProcess<Department> {
+
+    public static final Logger LOG = LoggerFactory.getLogger(DepartmentStatusUpdateProcess.class);
 
     private final DepartmentService departmentService;
 
@@ -20,7 +25,16 @@ public class DepartmentStatusUpdateProcess implements IntegrationProcess<Departm
     @Override
     public Message<Department> doProcess(Message<?> message) {
         Department dept = (Department) message.getPayload();
-        dept.setStatus("APPROVED");
+        LOG.info("Department status process start for deptID: {}", dept.getDepartmentId());
+        if(dept.getRetry() < 1 ){
+            dept.setRetry(1);
+            dept.setStatus("IN_PROGRESS");
+        } else if(dept.getRetry()<=1 && "IN_PROGRESS".equals(dept.getStatus())){
+            dept.setStatus("APPROVED");
+        } else{
+            dept.setStatus("FAILED");
+        }
+        LOG.info("Department status process End!!!");
         return MessageBuilder.withPayload(departmentService.updateDepartment(dept, dept.getDepartmentId()))
                 .copyHeaders(message.getHeaders())
                 .build();

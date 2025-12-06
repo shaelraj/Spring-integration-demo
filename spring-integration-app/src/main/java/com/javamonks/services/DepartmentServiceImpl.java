@@ -55,6 +55,8 @@ public class DepartmentServiceImpl implements DepartmentService {
             depDB.setStatus(department.getStatus());
         }
 
+        depDB.setRetry(department.getRetry());
+
         return departmentRepository.save(depDB);
     }
 

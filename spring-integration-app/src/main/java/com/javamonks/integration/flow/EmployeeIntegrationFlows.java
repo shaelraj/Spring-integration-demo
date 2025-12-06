@@ -4,6 +4,7 @@ import com.javamonks.model.Employee;
 import com.javamonks.process.DepartmentCodeUpdateProcess;
 import com.javamonks.process.DepartmentProcess;
 import com.javamonks.process.DepartmentStatusUpdateProcess;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +93,7 @@ public class EmployeeIntegrationFlows {
     }
 
     @Bean
+    @Transactional
     public IntegrationFlow getPendingDepartment() {
         return IntegrationFlow.fromSupplier(() -> departmentProcess.doProcess(MessageBuilder.withPayload("PENDING").build()),
                         e -> e.poller(Pollers.fixedRate(60000)))
@@ -99,7 +101,7 @@ public class EmployeeIntegrationFlows {
                 .split(Message.class, m -> m.getPayload())
                 .channel(c -> c.executor(taskExecutor))
                 .enrichHeaders(h-> h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow"))
-                .handle(departmentStatusUpdateProcess, "doProcess")
+                .handle(departmentStatusUpdateProcess, "doProcess", e->e.transactional(true))
                 .handle(departmentCodeUpdateProcess,"doProcess")
                 .handle(message -> {LOG.info("Completed successfully!!");})
                 .get();

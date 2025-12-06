@@ -36,7 +36,7 @@ public class DepartmentController {
     }
 
     // Update operation
-    @PutMapping("/departments/{id}")
+    @PostMapping("/departments/{id}")
     public Department
     updateDepartment(@RequestBody Department department,
                      @PathVariable("id") Long departmentId)

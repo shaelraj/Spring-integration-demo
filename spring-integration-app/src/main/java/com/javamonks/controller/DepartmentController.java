@@ -1,8 +1,10 @@
 package com.javamonks.controller;
 
+import com.javamonks.dto.DepartmentDto;
 import com.javamonks.entity.Department;
 import com.javamonks.services.DepartmentService;
 import jakarta.validation.Valid;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +21,11 @@ public class DepartmentController {
     // Save operation
     @PostMapping("/departments")
     public Department saveDepartment(
-            @Valid @RequestBody Department department)
+            @Valid @RequestBody DepartmentDto department)
     {
-        return departmentService.saveDepartment(department);
+        Department dept = new Department();
+        BeanUtils.copyProperties(department,dept);
+        return departmentService.saveDepartment(dept);
     }
 
     // Read operation

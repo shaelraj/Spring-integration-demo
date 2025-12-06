@@ -13,6 +13,8 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class ErrorIntegrationFlow {
 
@@ -37,8 +39,9 @@ public class ErrorIntegrationFlow {
 
                         if(originalPayload instanceof Department){
                             Department department = (Department) originalPayload;
-                            department.setStatus("FAILED");
-                            departmentRepository.save(department);
+                           Optional<Department> dept = departmentRepository.findById(department.getDepartmentId());
+                            dept.get().setStatus("FAILED");
+                            departmentRepository.save(dept.get());
 
                         }
                     }

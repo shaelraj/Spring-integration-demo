@@ -11,7 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DepartmentStatusUpdateProcess implements IntegrationProcess<Department> {
+public class DepartmentStatusUpdateProcess implements IntegrationProcess {
 
     public static final Logger LOG = LoggerFactory.getLogger(DepartmentStatusUpdateProcess.class);
 
@@ -23,7 +23,7 @@ public class DepartmentStatusUpdateProcess implements IntegrationProcess<Departm
     }
 
     @Override
-    public Message<Department> doProcess(Message<?> message) {
+    public Message<?> doProcess(Message<?> message) {
         Department dept = (Department) message.getPayload();
         LOG.info("Department status process start for deptID: {}", dept.getDepartmentId());
         if(dept.getRetry() < 1 ){

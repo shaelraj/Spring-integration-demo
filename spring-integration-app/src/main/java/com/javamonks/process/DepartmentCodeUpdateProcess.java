@@ -9,7 +9,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DepartmentCodeUpdateProcess implements IntegrationProcess<Department> {
+public class DepartmentCodeUpdateProcess implements IntegrationProcess {
 
     public static final Logger LOG = LoggerFactory.getLogger(DepartmentCodeUpdateProcess.class);
 
@@ -20,7 +20,7 @@ public class DepartmentCodeUpdateProcess implements IntegrationProcess<Departmen
     }
 
     @Override
-    public Message<Department> doProcess(Message<?> message) {
+    public Message<?> doProcess(Message<?> message) {
         Department dept = (Department) message.getPayload();
         LOG.info("Department code process Start!!!");
         dept.setCode("007");

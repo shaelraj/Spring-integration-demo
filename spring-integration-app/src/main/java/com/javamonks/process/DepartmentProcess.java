@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DepartmentProcess implements IntegrationProcess<List<Department>> {
+public class DepartmentProcess implements IntegrationProcess {
 
     private final DepartmentService departmentService;
 
@@ -21,7 +21,7 @@ public class DepartmentProcess implements IntegrationProcess<List<Department>> {
 
 
     @Override
-    public Message<List<Department>> doProcess(Message<?> message) {
+    public Message<?> doProcess(Message<?> message) {
         List<Department> list = departmentService.getDepartmentByStatus((String) message.getPayload());
         return MessageBuilder.withPayload(list).copyHeaders(message.getHeaders()).build();
     }

@@ -102,3 +102,11 @@ INSERT INTO DEPARTMENT (department_name, department_address, department_code, st
 
 
 ALTER SEQUENCE department_seq RESTART WITH 101;
+
+-- products table
+
+INSERT INTO product (name, price, status) VALUES ('Laptop', 1200.00, 'NEW');
+INSERT INTO product (name, price, status) VALUES ('Mouse', 25.00, 'NEW');
+INSERT INTO product (name, price, status) VALUES ('Keyboard', 75.00, 'NEW');
+INSERT INTO product (name, price, status) VALUES ('Monitor', 300.00, 'NEW');
+

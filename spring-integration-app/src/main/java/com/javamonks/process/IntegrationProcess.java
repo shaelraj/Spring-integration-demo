@@ -2,7 +2,7 @@ package com.javamonks.process;
 
 import org.springframework.messaging.Message;
 
-public interface IntegrationProcess<T> {
+public interface IntegrationProcess {
 
-    public abstract Message<T> doProcess(Message<?> message);
+    public abstract Message<?> doProcess(Message<?> message);
 }

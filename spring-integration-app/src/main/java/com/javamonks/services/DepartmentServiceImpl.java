@@ -3,6 +3,9 @@ package com.javamonks.services;
 import com.javamonks.entity.Department;
 import com.javamonks.repo.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
@@ -68,7 +71,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public List<Department> getDepartmentByStatus(String status) {
-        return departmentRepository.findByStatus(status);
+        Pageable limit = PageRequest.of(0, 15, Sort.by("departmentId").ascending());
+        return departmentRepository.findDepartmentWithStatusLimited(status, limit);
     }
 }
 

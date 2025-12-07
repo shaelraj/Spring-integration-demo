@@ -53,7 +53,7 @@ public class ProductIntegrationFlow {
     public IntegrationFlow fetchProductsFlow() {
         return IntegrationFlow
                 .fromSupplier(() -> pickNewProductProcess.doProcess(MessageBuilder.withPayload("NEW").build()),
-                        c -> c.poller(Pollers.fixedRate(3000).transactional(transactionManager()))
+                        c -> c.poller(Pollers.fixedRate(30000).transactional(transactionManager()))
                 ).enrichHeaders(h -> {
                     h.header(MessageHeaders.ERROR_CHANNEL, "errorHandlerFlow");
                 })

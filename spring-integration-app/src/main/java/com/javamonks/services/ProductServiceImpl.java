@@ -3,6 +3,9 @@ package com.javamonks.services;
 import com.javamonks.entity.Product;
 import com.javamonks.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
@@ -60,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getProductByStatus(String status) {
-        return productRepository.findByStatus(status);
+        Pageable limit = PageRequest.of(0, 15, Sort.by("id").ascending());
+        return productRepository.findProductsWithStatusLimited(status,limit);
     }
 }

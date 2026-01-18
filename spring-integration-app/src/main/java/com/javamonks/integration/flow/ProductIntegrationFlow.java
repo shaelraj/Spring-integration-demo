@@ -49,7 +49,7 @@ public class ProductIntegrationFlow {
     /**
      * 1. Define the inbound JPA polling adapter (data source).
      */
-    @Bean
+    @Bean("fetchProductsFlow")
     public IntegrationFlow fetchProductsFlow() {
         return IntegrationFlow
                 .fromSupplier(() -> pickNewProductProcess.doProcess(MessageBuilder.withPayload("NEW").build()),
@@ -82,7 +82,7 @@ public class ProductIntegrationFlow {
     /**
      * 2A. High Value Flow (Handle, Transform, Log)
      */
-    @Bean
+    @Bean("highValueProductFlow")
     public IntegrationFlow highValueProductFlow() {
         return IntegrationFlow.from("highValueChannel")
                 // Handler (Service Activator): Business Logic
@@ -101,7 +101,7 @@ public class ProductIntegrationFlow {
     /**
      * 2B. Low Value Flow (Handle, Transform, Log)
      */
-    @Bean
+    @Bean("lowValueProductFlow")
     public IntegrationFlow lowValueProductFlow() {
         return IntegrationFlow.from("lowValueChannel")
                 // Handler (Service Activator): Business Logic
@@ -120,7 +120,7 @@ public class ProductIntegrationFlow {
     /**
      * 3. OUTBOUND JPA GATEWAY: Persists changes to the database.
      */
-    @Bean
+    @Bean("updateDbFlow")
     public IntegrationFlow updateDbFlow() {
         return IntegrationFlow.from("jpaUpdateChannel")
                 // Use a JpaOutboundGateway to merge the updated entity state

@@ -7,6 +7,7 @@ import com.javamonks.process.DepartmentStatusUpdateProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.dsl.IntegrationFlow;
@@ -91,7 +92,10 @@ public class EmployeeIntegrationFlows {
                 });
     }
 
-    @Bean
+    @Bean("pendingDepartmentFLow")
+    @ConditionalOnProperty(name = "feature.department.enabled",
+            havingValue = "true",
+            matchIfMissing = false)
     public IntegrationFlow getPendingDepartment() {
         return IntegrationFlow.fromSupplier(() -> departmentProcess.doProcess(MessageBuilder.withPayload("PENDING").build()),
                         e -> e.poller(Pollers.fixedRate(60000)))
